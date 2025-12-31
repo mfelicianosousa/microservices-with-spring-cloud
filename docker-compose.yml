@@ -79,7 +79,7 @@ services:
       - naming-server
       - exchange-db
     networks:
-      - mardevsystem-network
+      - microservice-network
 
   book-service:
     image: mfelicianosousa/book-service
