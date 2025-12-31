@@ -60,7 +60,7 @@ services:
       - microservice-network
 
   exchange-service:
-    image: mfelicianosousa/exchange-service
+    image: mfelicianosousa/exchange-service:0.0.1-SNAPSHOT
     restart: always
     build:
       context: ./exchange-service
@@ -82,7 +82,7 @@ services:
       - microservice-network
 
   book-service:
-    image: mfelicianosousa/book-service
+    image: mfelicianosousa/book-service:0.0.1-SNAPSHOT
     restart: always
     build:
       context: ./book-service
