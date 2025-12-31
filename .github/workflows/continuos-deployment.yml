@@ -21,10 +21,12 @@ jobs:
         uses: actions/setup-java@v5
         with:
           java-version: '21'
-          distribution: 'adopt' # See 'Supported distributions' for available options
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          cache: maven
       - name: Build Eureka Naming Server Docker Image
         working-directory: ./naming-server
-        run: mvn spring-boot:build-image 
+        # run: mvn spring-boot:build-image 
+        run: ./mvnw -B -U spring-boot:build-image
 
       - name: Build API Gateway Docker Image
         working-directory: ./api-gateway
