@@ -1,0 +1,112 @@
+services:
+  zipkin-server:
+    image: openzipkin/zipkin:3.5.1
+    ports:
+      - 9411:9411
+    restart: always
+    networks:
+      - microservice-network
+
+  naming-server:
+    image: mfelicianosousa/naming-server:0.0.1-SNAPSHOT
+    ports:
+      - 8761:8761
+    restart: always
+    depends_on:
+      - zipkin-server
+    networks:
+      - microservice-network
+
+  api-gateway:
+    image: mfelicianosousa/api-gateway:0.0.1-SNAPSHOT
+    ports:
+      - 8765:8765
+    restart: always
+    depends_on:
+      - zipkin-server
+      - naming-server
+    environment:
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+    networks:
+      - microservice-network
+
+  book-db:
+    image: mysql:9.3.0
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      MYSQL_ROOT_PASSWORD: "${PASSWORD}"
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: book_service
+      MYSQL_USER: marcelino.sousa
+      MYSQL_PASSWORD: ${PASSWORD}
+    ports:
+      - 3310:3306 # 3310 on host -> 3306 on container
+    networks:
+      - microservice-network
+
+  exchange-db:
+    image: mysql:9.3.0
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      MYSQL_ROOT_PASSWORD: "${PASSWORD}"
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: exchange_service
+      MYSQL_USER: marcelino.sousa
+      MYSQL_PASSWORD: "${PASSWORD}"
+    ports:
+      - 3308:3306
+    networks:
+      - microservice-network
+
+  exchange-service:
+    image: mfelicianosousa/exchange-service:0.0.1-SNAPSHOT
+    restart: always
+    build:
+      context: ./../exchange.service
+      dockerfile: Dockerfile
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:mysql://exchange_service:3306/exchange-service?useSSL=false&allowPublicKeyRetrieval=false&serverTimezone=UTC&enabledTLSProtocol=TLSv1.2&createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: marcelino.sousa
+      SPRING_DATASOURCE_PASSWORD: "${PASSWORD}"
+    depends_on:
+      - zipkin-server
+      - naming-server
+      - exchange-db
+    ports:
+      - 8000:8000
+    networks:
+      - microservice-network
+
+  book-service:
+    image: mfelicianosousa/book-service:0.0.1-SNAPSHOT
+    restart: always
+    build:
+      context: ./../book.service
+      dockerfile: Dockerfile
+
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:mysql://book_service:3306/book-service?useSSL=false&allowPublicKeyRetrieval=false&serverTimezone=UTC&enabledTLSProtocol=TLSv1.2&createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: marcelino.sousa
+      SPRING_DATASOURCE_PASSWORD: "${PASSWORD}"
+    depends_on:
+      - zipkin-server
+      - naming-server
+      - book-db
+    ports:
+      - 8100:8100
+    networks:
+      - microservice-network
+
+networks:
+  microservice-network:
+    name: microservice-network
+    driver: bridge

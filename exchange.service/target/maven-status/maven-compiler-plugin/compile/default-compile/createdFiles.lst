@@ -1,0 +1,8 @@
+br\com\mardevsystem\config\WebConfig.class
+br\com\mardevsystem\config\OpenApiConfiguration.class
+br\com\mardevsystem\Startup.class
+br\com\mardevsystem\repository\ExchangeRepository.class
+br\com\mardevsystem\config\ZipkinCustomSenderConfig.class
+br\com\mardevsystem\model\Exchange.class
+br\com\mardevsystem\controller\ExchangeController.class
+br\com\mardevsystem\environment\InstanceInformationService.class

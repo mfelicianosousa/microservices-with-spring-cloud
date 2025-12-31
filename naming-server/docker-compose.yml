@@ -1,0 +1,140 @@
+version: "3.9"
+
+services:
+  zipkin-server:
+    image: openzipkin/zipkin:3.5.1
+    ports:
+      - "9411:9411"
+    restart: always
+    networks:
+      - microservice-network
+
+  naming-server:
+    image: mfelicianosousa/naming-server:0.0.1-SNAPSHOT
+    ports:
+      - "8761:8761"
+    restart: always
+    depends_on:
+      - zipkin-server
+    networks:
+      - microservice-network
+
+  api-gateway:
+    image: mfelicianosousa/api-gateway:0.0.1-SNAPSHOT
+    ports:
+      - "8765:8765"
+    restart: always
+    depends_on:
+      - zipkin-server
+      - naming-server
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING_ZIPKIN_BASEURL: ${SPRING_ZIPKIN_BASEURL}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+    networks:
+      - microservice-network
+
+  # ---------- MYSQL: BOOK ----------
+  book-db:
+    image: mysql:9.3.0
+    container_name: book-db
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      MYSQL_ROOT_PASSWORD: "${PASSWORD}"
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: book_service
+      MYSQL_USER: marcelino.sousa
+      MYSQL_PASSWORD: "${PASSWORD}"
+    ports:
+      - "3310:3306"
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  # ---------- MYSQL: EXCHANGE ----------
+  exchange-db:
+    image: mysql:9.3.0
+    container_name: exchange-db
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      MYSQL_ROOT_PASSWORD: "${PASSWORD}"
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: exchange_service
+      MYSQL_USER: marcelino.sousa
+      MYSQL_PASSWORD: "${PASSWORD}"
+    ports:
+      - "3308:3306"
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  # ---------- SERVICE: EXCHANGE ----------
+  exchange-service:
+    image: mfelicianosousa/exchange-service:0.0.1-SNAPSHOT
+    restart: always
+    build:
+      context: ./../exchange.service
+      dockerfile: Dockerfile
+    depends_on:
+      zipkin-server:
+        condition: service_started
+      naming-server:
+        condition: service_started
+      exchange-db:
+        condition: service_healthy
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING_ZIPKIN_BASEURL: ${SPRING_ZIPKIN_BASEURL}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+
+      # ✅ Corrigido: host = exchange-db, schema = exchange_service
+      SPRING_DATASOURCE_URL: jdbc:mysql://exchange-db:3306/exchange_service?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    ports:
+      - "8000:8000"
+    networks:
+      - microservice-network
+
+  # ---------- SERVICE: BOOK ----------
+  book-service:
+    image: mfelicianosousa/book-service:0.0.1-SNAPSHOT
+    restart: always
+    build:
+      context: ./../book.service
+      dockerfile: Dockerfile
+    depends_on:
+      zipkin-server:
+        condition: service_started
+      naming-server:
+        condition: service_started
+      book-db:
+        condition: service_healthy
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING_ZIPKIN_BASEURL: ${SPRING_ZIPKIN_BASEURL}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+
+      # ✅ Corrigido: host = book-db, schema = book_service
+      SPRING_DATASOURCE_URL: jdbc:mysql://book-db:3306/book_service?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    ports:
+      - "8100:8100"
+    networks:
+      - microservice-network
+
+networks:
+  microservice-network:
+    name: microservice-network
+    driver: bridge
