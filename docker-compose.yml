@@ -5,20 +5,20 @@ services:
       - 9411:9411
     restart: always
     networks:
-      - erudio-network
+      - microservice-network
 
   naming-server:
-    image: leandrocgsi/naming-server:0.0.1-SNAPSHOT
+    image: mfelicianosousa/naming-server:0.0.1-SNAPSHOT
     ports:
       - 8761:8761
     restart: always
     depends_on:
       - zipkin-server
     networks:
-      - erudio-network
+      - microservice-network
   
   api-gateway:
-    image: leandrocgsi/api-gateway:0.0.1-SNAPSHOT
+    image: mfelicianosousa/api-gateway:0.0.1-SNAPSHOT
     ports:
       - 8765:8765
     restart: always
@@ -29,7 +29,7 @@ services:
       SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
     networks:
-      - erudio-network
+      - microservice-network
 
   book-db:
     image: mysql:9.3.0
@@ -43,7 +43,7 @@ services:
     ports:
       - 3310:3306 # 3310 on host → 3306 on container
     networks:
-      - erudio-network
+      - microservice-network
 
   exchange-db:
     image: mysql:9.3.0
@@ -57,13 +57,13 @@ services:
     ports:
       - 3308:3306 # 3310 on host → 3306 on container
     networks:
-      - erudio-network
+      - microservice-network
 
   exchange-service:
-    image: leandrocgsi/exchange-service
+    image: mfelicianosousa/exchange-service
     restart: always
     build:
-      context: ./exchange.service
+      context: ./exchange-service
       dockerfile: Dockerfile
     environment:
       TZ: America/Sao_Paulo
@@ -79,13 +79,13 @@ services:
       - naming-server
       - exchange-db
     networks:
-      - erudio-network
+      - mardevsystem-network
 
   book-service:
-    image: leandrocgsi/book-service
+    image: mfelicianosousa/book-service
     restart: always
     build:
-      context: ./book.service
+      context: ./book-service
       dockerfile: Dockerfile
     environment:
       TZ: America/Sao_Paulo
@@ -101,8 +101,8 @@ services:
       - naming-server
       - book-db
     networks:
-      - erudio-network
+      - microservice-network
 networks:
-  erudio-network:
-    name: erudio-network
+  microservice-network:
+    name: microservice-network
     driver: bridge

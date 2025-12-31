@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.mardevsystem</groupId>
-	<artifactId>exchange.service</artifactId>
+	<artifactId>exchange-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>exchange.service</name>
 	<description>Currency Exchange</description>

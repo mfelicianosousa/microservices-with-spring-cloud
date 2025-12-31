@@ -1,0 +1,11 @@
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\config\OpenApiConfiguration.java
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\config\WebConfig.java
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\config\ZipkinCustomSenderConfig.java
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\controller\BookController.java
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\controller\FooBarController.java
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\dto\Exchange.java
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\environment\InstanceInformationService.java
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\model\Book.java
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\proxy\ExchangeProxy.java
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\repository\BookRepository.java
+E:\wks-ws\ws-spring\microservices-with-spring-cloud\book-service\src\main\java\br\com\mardevsystem\Startup.java

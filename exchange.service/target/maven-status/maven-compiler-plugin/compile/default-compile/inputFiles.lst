@@ -1,8 +1,0 @@
-E:\wks-ws\ws-spring\microservices-with-spring-cloud\exchange.service\src\main\java\br\com\mardevsystem\config\OpenApiConfiguration.java
-E:\wks-ws\ws-spring\microservices-with-spring-cloud\exchange.service\src\main\java\br\com\mardevsystem\config\WebConfig.java
-E:\wks-ws\ws-spring\microservices-with-spring-cloud\exchange.service\src\main\java\br\com\mardevsystem\config\ZipkinCustomSenderConfig.java
-E:\wks-ws\ws-spring\microservices-with-spring-cloud\exchange.service\src\main\java\br\com\mardevsystem\controller\ExchangeController.java
-E:\wks-ws\ws-spring\microservices-with-spring-cloud\exchange.service\src\main\java\br\com\mardevsystem\environment\InstanceInformationService.java
-E:\wks-ws\ws-spring\microservices-with-spring-cloud\exchange.service\src\main\java\br\com\mardevsystem\model\Exchange.java
-E:\wks-ws\ws-spring\microservices-with-spring-cloud\exchange.service\src\main\java\br\com\mardevsystem\repository\ExchangeRepository.java
-E:\wks-ws\ws-spring\microservices-with-spring-cloud\exchange.service\src\main\java\br\com\mardevsystem\Startup.java
